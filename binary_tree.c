@@ -26,9 +26,7 @@ int diff_heights(struct node *root) {
 }
 
 struct node* addToTree(struct node *root, struct node *parent, struct node *new_node) {
-   struct node *new_root;
-
-   fprintf(stderr, "calling\n");
+   struct node *new_root = root;
 
    if(root == NULL) {
       new_node->parent = parent;
@@ -44,8 +42,8 @@ struct node* addToTree(struct node *root, struct node *parent, struct node *new_
    if(diff_heights(root) > 1) {
       if(diff_heights(root->right) >= 0) {
 	 new_root = root->right;
-	 root->right = NULL;
-	 new_root->left = addToTree(root, new_root, new_root->left);
+	 root->right = addToTree(NULL, root, new_root->left);
+	 new_root->left = addToTree(NULL, new_root, root);
 	 new_root->parent = parent;
       }
       else {
@@ -60,7 +58,7 @@ struct node* addToTree(struct node *root, struct node *parent, struct node *new_
          // easy
       }
       else {
-         // hard
+         // hardd::
       }
    }
 
@@ -81,14 +79,12 @@ int main(char **argv, int argc) {
    struct node *tree = NULL;
    struct node *temp = NULL;
    
-   while(1) {
-      fprintf(stderr, "enter a num\n");
-      scanf("%d\n", &val);
-      if(val < 0)
-	 break;
+   fprintf(stderr, "enter a num\n");
+   while(scanf("%d\b", &val) && !feof(stdin)) {
       temp = calloc(1, sizeof(struct node));
       temp->val = val;
       tree = addToTree(tree, NULL, temp);
+      fprintf(stderr, "enter a num\n");
    }
 
    printInOrder(tree);
