@@ -26,7 +26,7 @@ int diff_heights(struct node *root) {
 }
 
 struct node* addToTree(struct node *root, struct node *parent, struct node *new_node) {
-   struct node *new_root = root;
+   struct node *new_root = root, *temp_b = NULL;
 
    if(root == NULL) {
       new_node->parent = parent;
@@ -47,8 +47,12 @@ struct node* addToTree(struct node *root, struct node *parent, struct node *new_
 	 new_root->parent = parent;
       }
       else {
-	 printf("shouldn't be trying to add a new number here\n");
-	 exit(-1);
+         new_root = root->right->left;
+         temp_b = root->right;
+         root->right = addToTree(NULL, root, new_root->left);
+         temp_b->left = addToTree(NULL, temp_b, new_root->right);
+         new_root->left = addToTree(NULL, new_root, root);
+         new_root->right = addToTree(NULL, new_root, temp_b); 
       }
    }
    else if(diff_heights(root) < -1) {
@@ -62,8 +66,18 @@ struct node* addToTree(struct node *root, struct node *parent, struct node *new_
       }
    }
 
-   new_root->height = max(height(new_root->right), height(new_root->left));
+   new_root->height = max(height(new_root->right), height(new_root->left)) + 1;
    return new_root;
+}
+
+void graphic(struct node *tree, int indent) {
+   if(tree) {
+      printf("%*d\n", indent, tree->val); 
+      printf("%*s\n", indent, "left subtree:");
+      graphic(tree->left, indent + 3);
+      printf("%*s\n", indent, "right subtree:");
+      graphic(tree->right, indent + 3);
+   }
 }
 
 void printInOrder(struct node *tree) {
@@ -88,5 +102,6 @@ int main(char **argv, int argc) {
    }
 
    printInOrder(tree);
+   graphic(tree, 0);
    return 0;
 }
